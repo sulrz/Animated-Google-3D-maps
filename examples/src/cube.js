@@ -62,7 +62,7 @@ async function main() {
 
   // create trackline and add to scene
   const points = dataPoints.map(p => overlay.latLngAltToVector3(p));
-  const curve = new CatmullRomCurve3(points, true, 'catmullrom', 0.2);
+  const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
   curve.updateArcLengths();
 
   const trackLine = createTrackLine(curve);

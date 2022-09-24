@@ -75,7 +75,7 @@ async function main() {
 
   // create track line alice
   const pointsAlice = ANIMATION_POINTS_ALICE.map(p => overlay.latLngAltToVector3(p));
-  const curveAlice = new CatmullRomCurve3(pointsAlice, true, 'catmullrom', 0.2);
+  const curveAlice = new CatmullRomCurve3(pointsAlice, false, 'catmullrom', 0.2);
   const trackLineAlice = createTrackLine(curveAlice);
   curveAlice.updateArcLengths();
   scene.add(trackLineAlice);
@@ -83,7 +83,7 @@ async function main() {
   
   // create track line bob
   const pointsBob = ANIMATION_POINTS_BOB.map(p => overlay.latLngAltToVector3(p));
-  const curveBob = new CatmullRomCurve3(pointsBob, true, 'catmullrom', 0.2);
+  const curveBob = new CatmullRomCurve3(pointsBob, false, 'catmullrom', 0.2);
   const trackLineBob = createTrackLine(curveBob);
   curveBob.updateArcLengths();
   scene.add(trackLineBob);
