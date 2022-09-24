@@ -1,45 +1,42 @@
 import {Mesh, MeshStandardMaterial, CylinderGeometry, SphereGeometry, CircleBufferGeometry} from 'three';
 import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
 
+import {CatmullRomCurve3, Vector3} from 'three';
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
 
+import {Line2} from 'three/examples/jsm/lines/Line2.js';
+import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
+import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
+
+import data from '../../src/XLSXParser/datajson8.json';
+import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
+
+const CAR_FRONT = new Vector3(0, 1, 0);
+
+let dataPoints = data.map(point => {
+  return {
+    ...point, lat: point.Latitude, 
+    lng: point.Longitude, 
+    "Timestamp": point["Timestamp"],
+    "Horizontal accuracy": point["Horizontal accuracy"] / 3, 
+    "Vertical accuracy": point["Vertical accuracy"] / 3
+  };
+});
+
 const VIEW_PARAMS = {
-  center: {
-    lat: 27.9744587,
-    lng: 86.93276159,
-    altitude: 0.994985
-  },
+  center: {lat: dataPoints[0]["Latitude"], lng: dataPoints[0]["Longitude"]},
   tilt: 67.5,
   heading: 60,
-  zoom: 14
+  zoom: 17
 };
 
-var ACUURACY_POINTS = [
-  {time: 5589, horizontal: 50.165430, vertical: 15.23450},
-  {time: 11401, horizontal: 25.365460, vertical: 	6.48738},
-  {time: 16587, horizontal: 20.443460, vertical: 	6.48285},
-  {time: 22478, horizontal: 20.187830, vertical: 	6.21373},
-  {time: 27731, horizontal: 15.123500, vertical: 	5.23723},
-  {time: 33435, horizontal: 14.278480, vertical: 	5.98438},
-  {time: 38750, horizontal: 16.123932, vertical: 	4.48284},
-  {time: 44006, horizontal: 13.124780, vertical: 	4.58395},
-  {time: 49284, horizontal: 14.123270, vertical: 	4.23382},
-  {time: 55117, horizontal: 14.128730, vertical: 	4.23892},
-  {time: 60971, horizontal: 14.858200, vertical: 	4.58938},
-  {time: 66118, horizontal: 12.405830, vertical: 	4.59865},
-  {time: 71481, horizontal: 15.284850, vertical: 	4.59835},
-  {time: 76894, horizontal: 12.482840, vertical: 	4.43943},
-  {time: 82145, horizontal: 10.284840, vertical: 	4.79795},
-  {time: 87595, horizontal: 10.273720, vertical: 	5.23884},
-  {time: 93277, horizontal: 11.195800, vertical: 	5.47273},
-  {time: 98692, horizontal: 11.846220, vertical: 	6.47284},
-]
+const mapContainer = document.querySelector('#map');
+const tmpVec3 = new Vector3();
 
-ACUURACY_POINTS = ACUURACY_POINTS.map(point => {return{...point, time: point.time / 3}});
-
-const DURATION = ACUURACY_POINTS[ACUURACY_POINTS.length-1].time - ACUURACY_POINTS[0].time;
-const START_HOR_ACC = ACUURACY_POINTS[0].horizontal;
-const START_VER_ACC = ACUURACY_POINTS[0].horizontal;
+const DURATION = dataPoints[dataPoints.length-1]["Timestamp"];
+const START_HOR_ACC = dataPoints[0]["Horizontal accuracy"];
+const START_VER_ACC = dataPoints[0]["Horizontal accuracy"];
 
 async function main() {
   const map = await initMap();
@@ -50,63 +47,86 @@ async function main() {
   overlay.setMap(map);
 
   const scene = overlay.getScene();
+
+  // create cylinder and add to scene
   const cylinder = new Mesh(
     new CylinderGeometry(START_HOR_ACC, START_HOR_ACC, START_VER_ACC * 2, 100),
-    new MeshStandardMaterial({color: 0x0000ff, opacity: 0.5, transparent: true})
+    new MeshStandardMaterial({color: 0x0000ff, opacity: 0.3, transparent: true})
   );
+  cylinder.scale.set(dataPoints[0]["Horizontal accuracy"], (dataPoints[0]["Vertical accuracy"]) * 2, dataPoints[0]["Horizontal accuracy"]);
   cylinder.rotation.set(Math.PI / 2, 0, 0);
-  
   const cylinderPosition = {...VIEW_PARAMS.center};
   overlay.latLngAltToVector3(cylinderPosition, cylinder.position);
-  
   scene.add(cylinder);
+  /////////////////////////////////////////
 
-  const sphere = new Mesh(
-    new SphereGeometry(50, 100, 100),
-    new MeshStandardMaterial({color: 0xff0000})
-  );
+  // create trackline and add to scene
+  const points = dataPoints.map(p => overlay.latLngAltToVector3(p));
+  const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
+  curve.updateArcLengths();
+
+  const trackLine = createTrackLine(curve);
+  scene.add(trackLine);
+  /////////////////////////////////////////
   
-  const spherePosition = {...VIEW_PARAMS.center};
-  overlay.latLngAltToVector3(spherePosition, sphere.position);
-  scene.add(sphere);
+  // create car and add to scene
+  let carModel = null;
+  loadCarModel().then(obj => {
+    carModel = obj;
+    scene.add(carModel);
 
+    const carPosition = {...VIEW_PARAMS.center};
+    overlay.latLngAltToVector3(carPosition, carModel.position);
+
+    carModel.scale.set(2, 2, 2);
+    carModel.rotation.set(0, 0, -Math.PI / 2);
+
+    overlay.requestRedraw();
+  });
+  ////////////////////////////////////////
+  
   var ind = 0;
   var timer = 0.0;
-  var currentTime = ACUURACY_POINTS[0].time;
-  var startTime = ACUURACY_POINTS[0].time;
-  var deltaHorAcc = ACUURACY_POINTS[1].horizontal - START_HOR_ACC;
-  var deltaVerAcc = ACUURACY_POINTS[1].vertical - START_VER_ACC;
   var prevTime = 0.0;
+  var currentTime = dataPoints[0]["Timestamp"];
+  
+  var deltaHorAcc = 0;
+  var deltaVerAcc = 0;
 
   overlay.update = () => {
     overlay.requestRedraw();
 
-    var newPos = sphere.position;
-    newPos.x += 5;
-
-    sphere.position.set(newPos.x, newPos.y, newPos.z);
-    cylinder.position.set(newPos.x, newPos.y, newPos.z);
-
     if (!cylinder) return;
     if (performance.now() > DURATION) return;
-    if (ind + 1 >= ACUURACY_POINTS.length) return;
+    if (ind + 1 >= dataPoints.length) return;
+    
+    const animationProgress = performance.now() / DURATION;
+    curve.getPointAt(animationProgress, carModel.position);
+    curve.getPointAt(animationProgress, cylinder.position);
+    carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
+    curve.getTangentAt(animationProgress, tmpVec3);
 
-    if (ACUURACY_POINTS[ind].time - startTime < performance.now()) {
+    if (timer / currentTime >= 1) {
       ind++;
 
-      if (ind + 1 >= ACUURACY_POINTS.length) return;
+      if (ind + 1 >= dataPoints.length) return;
 
-      deltaHorAcc = ACUURACY_POINTS[ind + 1].horizontal - ACUURACY_POINTS[ind].horizontal;
-      deltaVerAcc = ACUURACY_POINTS[ind + 1].vertical - ACUURACY_POINTS[ind].vertical;
-      
+
+      var timeDiff = (dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"]) / 1000;
+
+      deltaHorAcc = dataPoints[ind + 1]["Horizontal accuracy"] - dataPoints[ind]["Horizontal accuracy"];
+      deltaHorAcc /= timeDiff;
+      deltaVerAcc = dataPoints[ind + 1]["Vertical accuracy"] - dataPoints[ind]["Vertical accuracy"];
+      deltaVerAcc /= timeDiff;
+
       timer = 0.0;
-      currentTime = ACUURACY_POINTS[ind + 1].time - ACUURACY_POINTS[ind].time;
+      currentTime = dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"];
     }
 
-    var addSizeHor = deltaHorAcc * (timer / currentTime);
-    var addSizeVer = deltaVerAcc * (timer / currentTime);
+    var addSizeHor = deltaHorAcc / ((performance.now() - prevTime));
+    var addSizeVer = deltaVerAcc / ((performance.now() - prevTime));
 
-    cylinder.scale.set(ACUURACY_POINTS[ind].horizontal + addSizeHor, (ACUURACY_POINTS[ind].vertical + addSizeVer) * 2, ACUURACY_POINTS[ind].horizontal + addSizeHor);
+    cylinder.scale.set(cylinder.scale.x + addSizeHor, cylinder.scale.y + addSizeVer * 2, cylinder.scale.z + addSizeHor);
 
     timer += performance.now() - prevTime;
     prevTime = performance.now();
@@ -121,10 +141,54 @@ async function initMap() {
 
   return new google.maps.Map(document.querySelector('#map'), {
     mapId,
-    disableDefaultUI: true,
+    // disableDefaultUI: true,
     backgroundColor: 'transparent',
     gestureHandling: 'greedy',
     ...VIEW_PARAMS
+  });
+}
+
+/**
+ * Create a mesh-line from the spline to render the track the car is driving.
+ */
+ function createTrackLine(curve) {
+  const numPoints = 10 * curve.points.length;
+  const curvePoints = curve.getSpacedPoints(numPoints);
+  const positions = new Float32Array(numPoints * 3);
+
+  for (let i = 0; i < numPoints; i++) {
+    curvePoints[i].toArray(positions, 3 * i);
+  }
+
+  const trackLine = new Line2(
+    new LineGeometry(),
+    new LineMaterial({
+      color: 0x0f9d58,
+      linewidth: 0.02
+    })
+  );
+
+  trackLine.geometry.setPositions(positions);
+
+  return trackLine;
+}
+
+/**
+ * Load and prepare the car-model for animation.
+ */
+ async function loadCarModel() {
+  const loader = new GLTFLoader();
+
+  return new Promise(resolve => {
+    loader.load(CAR_MODEL_URL, gltf => {
+      const group = gltf.scene;
+      const carModel = group.getObjectByName('sedan');
+
+      carModel.scale.setScalar(3);
+      carModel.rotation.set(Math.PI / 2, 0, Math.PI, 'ZXY');
+
+      resolve(group);
+    });
   });
 }
 
