@@ -1,0 +1,62 @@
+[
+  {
+    "Latitude": 27.9744586954417,
+    "Longitude": 86.9327615931465,
+    "Altitude": 7904.99498543182,
+    "Identifier": "Tenzing",
+    "Timestamp": 93429,
+    "Floor label": "null",
+    "Horizontal accuracy": 100.21873,
+    "Vertical accuracy": 100.23782,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 27.9782944118062,
+    "Longitude": 86.9328289345355,
+    "Altitude": 8030.23562859161,
+    "Identifier": "Tenzing",
+    "Timestamp": 202575,
+    "Floor label": "null",
+    "Horizontal accuracy": 120.23892,
+    "Vertical accuracy": 90.12783,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 27.9822500528831,
+    "Longitude": 86.9292212536339,
+    "Altitude": 8418.22895971594,
+    "Identifier": "Tenzing",
+    "Timestamp": 284259,
+    "Floor label": "null",
+    "Horizontal accuracy": 95.71283,
+    "Vertical accuracy": 85.23982,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 27.986113230619,
+    "Longitude": 86.9268117577216,
+    "Altitude": 8667.76702937572,
+    "Identifier": "Tenzing",
+    "Timestamp": 736935,
+    "Floor label": "null",
+    "Horizontal accuracy": 92.23824,
+    "Vertical accuracy": 60.23234,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 27.9883405300116,
+    "Longitude": 86.9248104014861,
+    "Altitude": 8812.0491622451,
+    "Identifier": "Tenzing",
+    "Timestamp": 1211279,
+    "Floor label": "null",
+    "Horizontal accuracy": 65.123823,
+    "Vertical accuracy": 40.47834,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  }
+]
