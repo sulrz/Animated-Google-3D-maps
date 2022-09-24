@@ -5,32 +5,44 @@ import {Line2} from 'three/examples/jsm/lines/Line2.js';
 import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
 import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
-
+import dataPoints from '../../src/XLSXParser/datajson4.json';
 import PERSON_MODEL_URL from 'url:../assets/low_poly_person.glb';
 
 const CAR_FRONT = new Vector3(0, 1, 0);
 
 const VIEW_PARAMS = {
-  center: {lat: 40.78017131, lng: -73.96810659},
+  center: {lat: dataPoints[0].Latitude, lng: dataPoints[0].Longitude},
   zoom: 18,
   heading: 40,
   tilt: 65
 };
 
 const ANIMATION_DURATION = 20000;
+let answer = dataPoints.map(item => {
+  return {
+    lat: item.Latitude,
+    lng: item.Longitude,
+    altitude: item.Altitude
+  };
+});
 
-const ANIMATION_POINTS = [
-    {lat: 40.78017131, lng:	-73.96810659, altitude: 1.191633802},
-    {lat: 40.7803053, lng:	-73.96775031, altitude: 0.942729652},
-    {lat: 40.77999979, lng:	-73.96709096, altitude: 1.066590352},
-    {lat: 40.78025706 , lng: -73.96605064, altitude: 2.582525378},
-    {lat: 40.78118795 , lng: -73.96516988, altitude: 1.061874673},
-    {lat: 40.78205682, lng: 	-73.96513996, altitude: 1.336640946},
-    {lat: 40.78258892, lng: 	-73.96570807, altitude: 0.337218268},
-    {lat: 40.78239453, lng: 	-73.9670961, altitude: 0.71900696},
-    {lat: 40.78163486, lng: 	-73.96779419, altitude: 2.482616507},
-    {lat: 40.78047792, lng: 	-73.96793906, altitude: 0.627920173}
-];
+console.log(answer);
+// dataPoints = dataPoints.map(({Latitude: lat, Longitude: lng}) => ({lat, lng}));
+// console.log(dataPoints);
+
+const ANIMATION_POINTS = answer;
+// [
+//   {lat: 40.78017131, lng: -73.96810659, altitude: 1.191633802},
+//   {lat: 40.7803053, lng: -73.96775031, altitude: 0.942729652},
+//   {lat: 40.77999979, lng: -73.96709096, altitude: 1.066590352},
+//   {lat: 40.78025706, lng: -73.96605064, altitude: 2.582525378},
+//   {lat: 40.78118795, lng: -73.96516988, altitude: 1.061874673},
+//   {lat: 40.78205682, lng: -73.96513996, altitude: 1.336640946},
+//   {lat: 40.78258892, lng: -73.96570807, altitude: 0.337218268},
+//   {lat: 40.78239453, lng: -73.9670961, altitude: 0.71900696},
+//   {lat: 40.78163486, lng: -73.96779419, altitude: 2.482616507},
+//   {lat: 40.78047792, lng: -73.96793906, altitude: 0.627920173}
+// ];
 
 // const ANIMATION_POINTS = [
 //   {lat: 51.50843075, lng:	-0.098585086, altitude: 0},
@@ -82,8 +94,7 @@ async function main() {
     if (!carModel) return;
     if (performance.now() > ANIMATION_DURATION) return;
 
-    const animationProgress =
-      (performance.now() / ANIMATION_DURATION) ;
+    const animationProgress = performance.now() / ANIMATION_DURATION;
 
     // const animationProgress =
     //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;
