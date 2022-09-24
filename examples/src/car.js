@@ -8,10 +8,12 @@ import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
 
 import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
 
+var axios = require('axios');
+
 const CAR_FRONT = new Vector3(0, 1, 0);
 
 const VIEW_PARAMS = {
-  center: {lat: 51.50843075, lng: -0.098585086},
+  center: {lat: 51.49992826386113, lng: -0.15997018684951847},
   zoom: 18,
   heading: 40,
   tilt: 65
@@ -19,49 +21,12 @@ const VIEW_PARAMS = {
 
 const ANIMATION_DURATION = 20000;
 
-const ANIMATION_POINTS = [
-  {lat: 51.50843075, lng: -0.098585086},
-  {lat: 51.50817223, lng: -0.09859787},
-  {lat: 51.50840261, lng: -0.098512051},
-  {lat: 51.5086788, lng: -0.09849205},
-  {lat: 51.50917358, lng: -0.098467999},
-  {lat: 51.50959378, lng: -0.098424099},
-  {lat: 51.51008767, lng: -0.09837941},
-  {lat: 51.51052555, lng: -0.098353134},
-  {lat: 51.51085497, lng: -0.098416265},
-  {lat: 51.51116061, lng: -0.098394436}
-];
-
-// const ANIMATION_POINTS = [
-//     {lat: 40.78017131, lng:	-73.96810659, altitude: 1.191633802},
-//     {lat: 40.7803053, lng:	-73.96775031, altitude: 0.942729652},
-//     {lat: 40.77999979, lng:	-73.96709096, altitude: 1.066590352},
-//     {lat: 40.78025706 , lng: -73.96605064, altitude: 2.582525378},
-//     {lat: 40.78118795 , lng: -73.96516988, altitude: 1.061874673},
-//     {lat: 40.78205682, lng: 	-73.96513996, altitude: 1.336640946},
-//     {lat: 40.78258892, lng: 	-73.96570807, altitude: 0.337218268},
-//     {lat: 40.78239453, lng: 	-73.9670961, altitude: 0.71900696},
-//     {lat: 40.78163486, lng: 	-73.96779419, altitude: 2.482616507},
-//     {lat: 40.78047792, lng: 	-73.96793906, altitude: 0.627920173}
-// ];
-
-// const ANIMATION_POINTS = [
-//   {lat: 51.50843075, lng:	-0.098585086, altitude: 0},
-//     {lat: 51.50817223, lng:	-0.09859787, altitude: 3},
-//     {lat: 51.50840261, lng:	-0.098512051, altitude: 6},
-//     {lat: 51.5086788 , lng: -0.09849205, altitude: 9},
-//     {lat: 51.50917358, lng: 	-0.098467999, altitude: 12},
-//     {lat: 51.50959378, lng: 	-0.098424099, altitude: 15},
-//     {lat: 51.51008767, lng: 	-0.09837941, altitude: 18},
-//     {lat: 51.51052555, lng: 	-0.098353134, altitude: 21},
-//     {lat: 51.51085497, lng: 	-0.098416265, altitude: 24},
-//     {lat: 51.51116061, lng: 	-0.098394436, altitude: 27},
-// ];
-
 const mapContainer = document.querySelector('#map');
 const tmpVec3 = new Vector3();
 
-async function main() {
+async function main(arrData) {
+  const ANIMATION_POINTS = arrData;
+  console.log(ANIMATION_POINTS);
   const map = await initMap();
   const elevator = new google.maps.ElevationService();
 
@@ -72,8 +37,12 @@ async function main() {
 
   // create a Catmull-Rom spline from the points to smooth out the corners
   // for the animation
+  console.log(ANIMATION_POINTS.length);
+  for (let i = 0; i < ANIMATION_POINTS.length; i++) {
+    console.log(ANIMATION_POINTS[i]);
+  }
   const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
-  const curve = new CatmullRomCurve3(points, true, 'catmullrom', 0.2);
+  const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
   curve.updateArcLengths();
 
   const displayAltitude = (location, elevator) => {
@@ -90,6 +59,8 @@ async function main() {
       })
       .catch(e => console.log(e));
   };
+
+  console.log(ANIMATION_POINTS);
 
   ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
@@ -115,15 +86,41 @@ async function main() {
 
     const animationProgress = performance.now() / ANIMATION_DURATION;
 
-    // const animationProgress =
-    //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;
-
     curve.getPointAt(animationProgress, carModel.position);
     curve.getTangentAt(animationProgress, tmpVec3);
     carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
 
     overlay.requestRedraw();
   };
+}
+
+async function fetchRoad(destinationCoordinate) {
+  if (destinationCoordinate === null) {
+    return;
+  }
+  var config = {
+    method: 'get',
+    url: `https://maps.googleapis.com/maps/api/directions/json?origin=51.49992826386113,-0.15997018684951847&destination=${destinationCoordinate.lat},${destinationCoordinate.lng}&key=AIzaSyDNBKSzCknMCkDnKHApWbAMQKhSJ_4PKHI&alternatives=false`,
+    headers: {}
+  };
+
+  let arrData = [];
+
+  await axios(config)
+    .then(function (response) {
+      const roadData = response.data.routes[0].legs[0].steps;
+      for (let i = 0; i < roadData.length; i++) {
+        arrData.push(roadData[i].start_location);
+        arrData.push(roadData[i].end_location);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  console.log(arrData);
+  main(arrData);
+  return arrData;
 }
 
 /**
@@ -133,13 +130,20 @@ async function initMap() {
   const {mapId} = getMapsApiOptions();
   await loadMapsApi();
 
-  return new google.maps.Map(mapContainer, {
+  const map = new google.maps.Map(mapContainer, {
     mapId,
     disableDefaultUI: true,
     backgroundColor: 'transparent',
     gestureHandling: 'greedy',
     ...VIEW_PARAMS
   });
+
+  map.addListener('click', mapsMouseEvent => {
+    fetchRoad(mapsMouseEvent.latLng.toJSON());
+    console.log(JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2));
+  });
+
+  return map;
 }
 
 /**
@@ -178,7 +182,7 @@ async function loadCarModel() {
       const group = gltf.scene;
       const carModel = group.getObjectByName('sedan');
 
-      carModel.scale.setScalar(3);
+      carModel.scale.setScalar(50);
       carModel.rotation.set(Math.PI / 2, 0, Math.PI, 'ZXY');
 
       resolve(group);
