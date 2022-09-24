@@ -26,7 +26,6 @@ const tmpVec3 = new Vector3();
 
 async function main(arrData) {
   const ANIMATION_POINTS = arrData;
-  console.log(ANIMATION_POINTS);
   const map = await initMap();
   const elevator = new google.maps.ElevationService();
 
@@ -35,12 +34,6 @@ async function main(arrData) {
 
   overlay.setMap(map);
 
-  // create a Catmull-Rom spline from the points to smooth out the corners
-  // for the animation
-  console.log(ANIMATION_POINTS.length);
-  for (let i = 0; i < ANIMATION_POINTS.length; i++) {
-    console.log(ANIMATION_POINTS[i]);
-  }
   const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
   const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
   curve.updateArcLengths();
@@ -59,8 +52,6 @@ async function main(arrData) {
       })
       .catch(e => console.log(e));
   };
-
-  console.log(ANIMATION_POINTS);
 
   ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
@@ -118,7 +109,6 @@ async function fetchRoad(destinationCoordinate) {
       console.log(error);
     });
 
-  console.log(arrData);
   main(arrData);
   return arrData;
 }
