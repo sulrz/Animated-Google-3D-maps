@@ -1,1 +1,14 @@
-[{"Latitude":35.6609342754636,"Longitude":139.729033427753,"Altitude":0,"Identifier":"null","Timestamp":4875,"Floor label":"null","Horizontal accuracy":2.314,"Vertical accuracy":0.612,"Confidence in location accuracy":0.6827,"Activity":"UNKNOWN"}]
+[
+  {
+    "Latitude": 35.6609342754636,
+    "Longitude": 139.729033427753,
+    "Altitude": 0,
+    "Identifier": "null",
+    "Timestamp": 4875,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.314,
+    "Vertical accuracy": 0.612,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "UNKNOWN"
+  }
+]

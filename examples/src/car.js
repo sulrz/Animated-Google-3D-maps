@@ -20,16 +20,16 @@ const VIEW_PARAMS = {
 const ANIMATION_DURATION = 20000;
 
 const ANIMATION_POINTS = [
-  {lat: 51.50843075, lng:	-0.098585086},
-    {lat: 51.50817223, lng:	-0.09859787},
-    {lat: 51.50840261, lng:	-0.098512051},
-    {lat: 51.5086788 , lng: -0.09849205},
-    {lat: 51.50917358, lng: 	-0.098467999},
-    {lat: 51.50959378, lng: 	-0.098424099},
-    {lat: 51.51008767, lng: 	-0.09837941},
-    {lat: 51.51052555, lng: 	-0.098353134},
-    {lat: 51.51085497, lng: 	-0.098416265},
-    {lat: 51.51116061, lng: 	-0.098394436},
+  {lat: 51.50843075, lng: -0.098585086},
+  {lat: 51.50817223, lng: -0.09859787},
+  {lat: 51.50840261, lng: -0.098512051},
+  {lat: 51.5086788, lng: -0.09849205},
+  {lat: 51.50917358, lng: -0.098467999},
+  {lat: 51.50959378, lng: -0.098424099},
+  {lat: 51.51008767, lng: -0.09837941},
+  {lat: 51.51052555, lng: -0.098353134},
+  {lat: 51.51085497, lng: -0.098416265},
+  {lat: 51.51116061, lng: -0.098394436}
 ];
 
 // const ANIMATION_POINTS = [
@@ -50,6 +50,7 @@ const tmpVec3 = new Vector3();
 
 async function main() {
   const map = await initMap();
+  const elevator = new google.maps.ElevationService();
 
   const overlay = new ThreeJSOverlayView(VIEW_PARAMS.center);
   const scene = overlay.getScene();
@@ -61,6 +62,23 @@ async function main() {
   const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
   const curve = new CatmullRomCurve3(points, true, 'catmullrom', 0.2);
   curve.updateArcLengths();
+
+  const displayAltitude = (location, elevator) => {
+    elevator
+      .getElevationForLocations({
+        locations: [location]
+      })
+      .then(({results}) => {
+        if (results[0]) {
+          console.log(results[0].elevation);
+        } else {
+          console.log('no res');
+        }
+      })
+      .catch(e => console.log(e));
+  };
+
+  ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
   const trackLine = createTrackLine(curve);
   scene.add(trackLine);
@@ -82,8 +100,7 @@ async function main() {
     if (!carModel) return;
     if (performance.now() > ANIMATION_DURATION) return;
 
-    const animationProgress =
-      (performance.now() / ANIMATION_DURATION) ;
+    const animationProgress = performance.now() / ANIMATION_DURATION;
 
     // const animationProgress =
     //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;

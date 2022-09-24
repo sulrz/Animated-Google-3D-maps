@@ -1,1 +1,98 @@
-[{"Latitude":52.3719074577595,"Longitude":4.90526689003245,"Altitude":-1.39819542712897,"Identifier":"Jane","Timestamp":78,"Floor label":"null","Horizontal accuracy":4.38821,"Vertical accuracy":3.13234,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3714335866613,"Longitude":4.90409851493971,"Altitude":-1.3085335092803,"Identifier":"Jane","Timestamp":5781,"Floor label":"null","Horizontal accuracy":4.98133,"Vertical accuracy":3.3291383,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3713044566592,"Longitude":4.9038118290386,"Altitude":-0.0113110065885346,"Identifier":"Jane","Timestamp":12785,"Floor label":"null","Horizontal accuracy":4.32491,"Vertical accuracy":3.39132933,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3711005552152,"Longitude":4.90411241094314,"Altitude":-0.435420847930456,"Identifier":"Jane","Timestamp":17636,"Floor label":"null","Horizontal accuracy":4.596906,"Vertical accuracy":3.585938,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3708876449937,"Longitude":4.90427729624819,"Altitude":0.847999421928209,"Identifier":"Jane","Timestamp":23971,"Floor label":"null","Horizontal accuracy":4.89191,"Vertical accuracy":3.981873,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3706592709929,"Longitude":4.90416842424938,"Altitude":0.737749414369133,"Identifier":"Jane","Timestamp":29769,"Floor label":"null","Horizontal accuracy":4.8871812,"Vertical accuracy":3.877172,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3703643529528,"Longitude":4.90450047223958,"Altitude":0.666605798597992,"Identifier":"Jane","Timestamp":34521,"Floor label":"null","Horizontal accuracy":4.721832,"Vertical accuracy":6.93301,"Confidence in location accuracy":0.6827,"Activity":"cycling"},{"Latitude":52.3705929507105,"Longitude":4.90573079854871,"Altitude":0.692590480530808,"Identifier":"Jane","Timestamp":40818,"Floor label":"null","Horizontal accuracy":4.81812,"Vertical accuracy":3.93011,"Confidence in location accuracy":0.6827,"Activity":"cycling"}]
+[
+  {
+    "Latitude": 52.3719074577595,
+    "Longitude": 4.90526689003245,
+    "Altitude": -1.39819542712897,
+    "Identifier": "Jane",
+    "Timestamp": 78,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.38821,
+    "Vertical accuracy": 3.13234,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3714335866613,
+    "Longitude": 4.90409851493971,
+    "Altitude": -1.3085335092803,
+    "Identifier": "Jane",
+    "Timestamp": 5781,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.98133,
+    "Vertical accuracy": 3.3291383,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3713044566592,
+    "Longitude": 4.9038118290386,
+    "Altitude": -0.0113110065885346,
+    "Identifier": "Jane",
+    "Timestamp": 12785,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.32491,
+    "Vertical accuracy": 3.39132933,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3711005552152,
+    "Longitude": 4.90411241094314,
+    "Altitude": -0.435420847930456,
+    "Identifier": "Jane",
+    "Timestamp": 17636,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.596906,
+    "Vertical accuracy": 3.585938,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3708876449937,
+    "Longitude": 4.90427729624819,
+    "Altitude": 0.847999421928209,
+    "Identifier": "Jane",
+    "Timestamp": 23971,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.89191,
+    "Vertical accuracy": 3.981873,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3706592709929,
+    "Longitude": 4.90416842424938,
+    "Altitude": 0.737749414369133,
+    "Identifier": "Jane",
+    "Timestamp": 29769,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.8871812,
+    "Vertical accuracy": 3.877172,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3703643529528,
+    "Longitude": 4.90450047223958,
+    "Altitude": 0.666605798597992,
+    "Identifier": "Jane",
+    "Timestamp": 34521,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.721832,
+    "Vertical accuracy": 6.93301,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  },
+  {
+    "Latitude": 52.3705929507105,
+    "Longitude": 4.90573079854871,
+    "Altitude": 0.692590480530808,
+    "Identifier": "Jane",
+    "Timestamp": 40818,
+    "Floor label": "null",
+    "Horizontal accuracy": 4.81812,
+    "Vertical accuracy": 3.93011,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "cycling"
+  }
+]

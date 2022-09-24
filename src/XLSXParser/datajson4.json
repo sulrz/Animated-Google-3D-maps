@@ -1,1 +1,122 @@
-[{"Latitude":51.5084307498856,"Longitude":-0.0985850860961545,"Altitude":0.65811756308103,"Identifier":"Alice","Timestamp":210541,"Floor label":"null","Horizontal accuracy":2.3764,"Vertical accuracy":5.484818,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5081722295039,"Longitude":-0.0985978698818246,"Altitude":0.18460057895524,"Identifier":"Alice","Timestamp":271786,"Floor label":"null","Horizontal accuracy":2.8573,"Vertical accuracy":5.18274,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5084026106553,"Longitude":-0.098512050934636,"Altitude":1.11890095321305,"Identifier":"Alice","Timestamp":346999,"Floor label":"null","Horizontal accuracy":2.9853,"Vertical accuracy":5.4228294,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5086787981714,"Longitude":-0.0984920497122077,"Altitude":6.84008048192768,"Identifier":"Alice","Timestamp":412323,"Floor label":"null","Horizontal accuracy":2.55035,"Vertical accuracy":2.325053,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5091735759613,"Longitude":-0.0984679986576197,"Altitude":6.8198559137089,"Identifier":"Alice","Timestamp":496645,"Floor label":"null","Horizontal accuracy":2.98437,"Vertical accuracy":5.13931,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5095937834761,"Longitude":-0.0984240991632801,"Altitude":6.81997951790538,"Identifier":"Alice","Timestamp":556118,"Floor label":"null","Horizontal accuracy":3.292342,"Vertical accuracy":5.420242,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.510087671925,"Longitude":-0.0983794103700441,"Altitude":7.17710718071825,"Identifier":"Alice","Timestamp":616721,"Floor label":"null","Horizontal accuracy":2.45881,"Vertical accuracy":4.92494,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.51052554748,"Longitude":-0.0983531343389532,"Altitude":7.1412686889752,"Identifier":"Alice","Timestamp":691282,"Floor label":"null","Horizontal accuracy":2.443,"Vertical accuracy":3.450505,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5108549650061,"Longitude":-0.0984162651626019,"Altitude":0.20171483400944,"Identifier":"Alice","Timestamp":765795,"Floor label":"null","Horizontal accuracy":2.91781,"Vertical accuracy":4.30202,"Confidence in location accuracy":0.6827,"Activity":"walking"},{"Latitude":51.5111606123825,"Longitude":-0.0983944360105759,"Altitude":0.2341160768048,"Identifier":"Alice","Timestamp":834246,"Floor label":"null","Horizontal accuracy":3.928974,"Vertical accuracy":3.204045,"Confidence in location accuracy":0.6827,"Activity":"walking"}]
+[
+  {
+    "Latitude": 51.5084307498856,
+    "Longitude": -0.0985850860961545,
+    "Altitude": 0.65811756308103,
+    "Identifier": "Alice",
+    "Timestamp": 210541,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.3764,
+    "Vertical accuracy": 5.484818,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5081722295039,
+    "Longitude": -0.0985978698818246,
+    "Altitude": 0.18460057895524,
+    "Identifier": "Alice",
+    "Timestamp": 271786,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.8573,
+    "Vertical accuracy": 5.18274,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5084026106553,
+    "Longitude": -0.098512050934636,
+    "Altitude": 1.11890095321305,
+    "Identifier": "Alice",
+    "Timestamp": 346999,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.9853,
+    "Vertical accuracy": 5.4228294,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5086787981714,
+    "Longitude": -0.0984920497122077,
+    "Altitude": 6.84008048192768,
+    "Identifier": "Alice",
+    "Timestamp": 412323,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.55035,
+    "Vertical accuracy": 2.325053,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5091735759613,
+    "Longitude": -0.0984679986576197,
+    "Altitude": 6.8198559137089,
+    "Identifier": "Alice",
+    "Timestamp": 496645,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.98437,
+    "Vertical accuracy": 5.13931,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5095937834761,
+    "Longitude": -0.0984240991632801,
+    "Altitude": 6.81997951790538,
+    "Identifier": "Alice",
+    "Timestamp": 556118,
+    "Floor label": "null",
+    "Horizontal accuracy": 3.292342,
+    "Vertical accuracy": 5.420242,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.510087671925,
+    "Longitude": -0.0983794103700441,
+    "Altitude": 7.17710718071825,
+    "Identifier": "Alice",
+    "Timestamp": 616721,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.45881,
+    "Vertical accuracy": 4.92494,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.51052554748,
+    "Longitude": -0.0983531343389532,
+    "Altitude": 7.1412686889752,
+    "Identifier": "Alice",
+    "Timestamp": 691282,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.443,
+    "Vertical accuracy": 3.450505,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5108549650061,
+    "Longitude": -0.0984162651626019,
+    "Altitude": 0.20171483400944,
+    "Identifier": "Alice",
+    "Timestamp": 765795,
+    "Floor label": "null",
+    "Horizontal accuracy": 2.91781,
+    "Vertical accuracy": 4.30202,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  },
+  {
+    "Latitude": 51.5111606123825,
+    "Longitude": -0.0983944360105759,
+    "Altitude": 0.2341160768048,
+    "Identifier": "Alice",
+    "Timestamp": 834246,
+    "Floor label": "null",
+    "Horizontal accuracy": 3.928974,
+    "Vertical accuracy": 3.204045,
+    "Confidence in location accuracy": 0.6827,
+    "Activity": "walking"
+  }
+]
