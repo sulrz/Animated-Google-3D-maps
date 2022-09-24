@@ -12,12 +12,12 @@ const PERSON_FRONT = new Vector3(0, 1, 0);
 
 const VIEW_PARAMS = {
   center: {lat: dataPoints[0].Latitude, lng: dataPoints[0].Longitude},
-  zoom: 18,
+  zoom: 30,
   heading: 40,
   tilt: 65
 };
 
-const ANIMATION_DURATION = 20000;
+const ANIMATION_DURATION = (dataPoints[6].Timestamp - dataPoints[0].Timestamp) / 20; // 20000
 
 let alice = dataPoints.filter((person) => {
     return person.Identifier==="Alice";
@@ -135,9 +135,9 @@ async function main() {
 
     curveAlice.getPointAt(animationProgress, personModelAlice.position);
     curveAlice.getTangentAt(animationProgress, tmpVec3);
+    personModelAlice.quaternion.setFromUnitVectors(PERSON_FRONT, tmpVec3);
     curveBob.getPointAt(animationProgress, personModelBob.position);
     curveBob.getTangentAt(animationProgress, tmpVec3);
-    personModelAlice.quaternion.setFromUnitVectors(PERSON_FRONT, tmpVec3);
     personModelBob.quaternion.setFromUnitVectors(PERSON_FRONT, tmpVec3);
 
     overlay.requestRedraw();

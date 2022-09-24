@@ -68,7 +68,7 @@ async function main() {
   const trackLine = createTrackLine(curve);
   scene.add(trackLine);
   /////////////////////////////////////////
-
+  
   // create car and add to scene
   let carModel = null;
   loadCarModel().then(obj => {

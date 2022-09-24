@@ -6,15 +6,26 @@ import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
 import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
 
+import data from '../../src/XLSXParser/datajson4.json';
 import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
 
 const CAR_FRONT = new Vector3(0, 1, 0);
 
+let dataPoints = data.map(point => {
+  return {
+    ...point, lat: point.Latitude, 
+    lng: point.Longitude, 
+    "Timestamp": point["Timestamp"],
+    "Horizontal accuracy": point["Horizontal accuracy"] / 3, 
+    "Vertical accuracy": point["Vertical accuracy"] / 3
+  };
+});
+
 const VIEW_PARAMS = {
-  center: {lat: 51.50843075, lng: -0.098585086},
-  zoom: 18,
-  heading: 40,
-  tilt: 65
+  center: {lat: dataPoints[0]["Latitude"], lng: dataPoints[0]["Longitude"]},
+  zoom: 17,
+  heading: 60,
+  tilt: 67.5
 };
 
 const ANIMATION_DURATION = 20000;
@@ -61,6 +72,10 @@ const ANIMATION_POINTS = [
 const mapContainer = document.querySelector('#map');
 const tmpVec3 = new Vector3();
 
+const DURATION = dataPoints[dataPoints.length-1]["Timestamp"];
+const START_HOR_ACC = dataPoints[0]["Horizontal accuracy"];
+const START_VER_ACC = dataPoints[0]["Horizontal accuracy"];
+
 async function main() {
   const map = await initMap();
   const elevator = new google.maps.ElevationService();
@@ -70,57 +85,107 @@ async function main() {
 
   overlay.setMap(map);
 
+  const cylinder = new Mesh(
+    new CylinderGeometry(START_HOR_ACC, START_HOR_ACC, START_VER_ACC * 2, 100),
+    new MeshStandardMaterial({color: 0x0000ff, opacity: 0.3, transparent: true})
+  );
+  cylinder.scale.set(dataPoints[0]["Horizontal accuracy"], (dataPoints[0]["Vertical accuracy"]) * 2, dataPoints[0]["Horizontal accuracy"]);
+  cylinder.rotation.set(Math.PI / 2, 0, 0);
+  const cylinderPosition = {...VIEW_PARAMS.center};
+  overlay.latLngAltToVector3(cylinderPosition, cylinder.position);
+  scene.add(cylinder);
+
   // create a Catmull-Rom spline from the points to smooth out the corners
   // for the animation
-  const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
+  const points = dataPoints.map(p => overlay.latLngAltToVector3(p));
   const curve = new CatmullRomCurve3(points, true, 'catmullrom', 0.2);
   curve.updateArcLengths();
 
-  const displayAltitude = (location, elevator) => {
-    elevator
-      .getElevationForLocations({
-        locations: [location]
-      })
-      .then(({results}) => {
-        if (results[0]) {
-          console.log(results[0].elevation);
-        } else {
-          console.log('no res');
-        }
-      })
-      .catch(e => console.log(e));
-  };
-
-  ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
-
   const trackLine = createTrackLine(curve);
   scene.add(trackLine);
+
+  // const displayAltitude = (location, elevator) => {
+  //   elevator
+  //     .getElevationForLocations({
+  //       locations: [location]
+  //     })
+  //     .then(({results}) => {
+  //       if (results[0]) {
+  //         console.log(results[0].elevation);
+  //       } else {
+  //         console.log('no res');
+  //       }
+  //     })
+  //     .catch(e => console.log(e));
+  // };
+
+  // ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
   let carModel = null;
   loadCarModel().then(obj => {
     carModel = obj;
     scene.add(carModel);
+    const carPosition = {...VIEW_PARAMS.center};
+    overlay.latLngAltToVector3(carPosition, carModel.position);
 
+    carModel.scale.set(2, 2, 2);
+    carModel.rotation.set(0, 0, -Math.PI / 2);
     // since loading the car-model happened asynchronously, we need to
     // explicitly trigger a redraw.
     overlay.requestRedraw();
   });
+
+  var ind = 0;
+  var timer = 0.0;
+  var prevTime = 0.0;
+  var currentTime = dataPoints[0]["Timestamp"];
+  
+  var deltaHorAcc = 0;
+  var deltaVerAcc = 0;
 
   // the update-function will animate the car along the spline
   overlay.update = () => {
     trackLine.material.resolution.copy(overlay.getViewportSize());
 
     if (!carModel) return;
-    if (performance.now() > ANIMATION_DURATION) return;
+    if (!cylinder) return;
+    if (performance.now() > DURATION) return;
+    if (ind + 1 >= dataPoints.length) return;
 
-    const animationProgress = performance.now() / ANIMATION_DURATION;
+    const animationProgress = performance.now() / DURATION;
 
     // const animationProgress =
     //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;
 
     curve.getPointAt(animationProgress, carModel.position);
-    curve.getTangentAt(animationProgress, tmpVec3);
+    curve.getPointAt(animationProgress, cylinder.position);
     carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
+    curve.getTangentAt(animationProgress, tmpVec3);
+
+    if (timer / currentTime >= 1) {
+      ind++;
+
+      if (ind + 1 >= dataPoints.length) return;
+
+
+      var timeDiff = (dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"]) / 1000;
+
+      deltaHorAcc = dataPoints[ind + 1]["Horizontal accuracy"] - dataPoints[ind]["Horizontal accuracy"];
+      deltaHorAcc /= timeDiff;
+      deltaVerAcc = dataPoints[ind + 1]["Vertical accuracy"] - dataPoints[ind]["Vertical accuracy"];
+      deltaVerAcc /= timeDiff;
+
+      timer = 0.0;
+      currentTime = dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"];
+    }
+
+    var addSizeHor = deltaHorAcc / ((performance.now() - prevTime));
+    var addSizeVer = deltaVerAcc / ((performance.now() - prevTime));
+
+    cylinder.scale.set(cylinder.scale.x + addSizeHor, cylinder.scale.y + addSizeVer * 2, cylinder.scale.z + addSizeHor);
+
+    timer += performance.now() - prevTime;
+    prevTime = performance.now();
 
     overlay.requestRedraw();
   };
@@ -135,7 +200,7 @@ async function initMap() {
 
   return new google.maps.Map(mapContainer, {
     mapId,
-    disableDefaultUI: true,
+    // disableDefaultUI: true,
     backgroundColor: 'transparent',
     gestureHandling: 'greedy',
     ...VIEW_PARAMS
