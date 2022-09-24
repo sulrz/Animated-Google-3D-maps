@@ -21,15 +21,15 @@ const ANIMATION_DURATION = 20000;
 
 const ANIMATION_POINTS = [
   {lat: 51.50843075, lng:	-0.098585086},
-    {lat: 51.50817223, lng:	-0.09859787},
-    {lat: 51.50840261, lng:	-0.098512051},
-    {lat: 51.5086788 , lng: -0.09849205},
-    {lat: 51.50917358, lng: 	-0.098467999},
-    {lat: 51.50959378, lng: 	-0.098424099},
-    {lat: 51.51008767, lng: 	-0.09837941},
-    {lat: 51.51052555, lng: 	-0.098353134},
-    {lat: 51.51085497, lng: 	-0.098416265},
-    {lat: 51.51116061, lng: 	-0.098394436},
+  {lat: 51.50817223, lng:	-0.09859787},
+  {lat: 51.50840261, lng:	-0.098512051},
+  {lat: 51.5086788 , lng: -0.09849205},
+  {lat: 51.50917358, lng: 	-0.098467999},
+  {lat: 51.50959378, lng: 	-0.098424099},
+  {lat: 51.51008767, lng: 	-0.09837941},
+  {lat: 51.51052555, lng: 	-0.098353134},
+  {lat: 51.51085497, lng: 	-0.098416265},
+  {lat: 51.51116061, lng: 	-0.098394436},
 ];
 
 // const ANIMATION_POINTS = [
@@ -83,7 +83,7 @@ async function main() {
     if (performance.now() > ANIMATION_DURATION) return;
 
     const animationProgress =
-      (performance.now() / ANIMATION_DURATION) ;
+      (performance.now() / ANIMATION_DURATION);
 
     // const animationProgress =
     //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;
