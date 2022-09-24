@@ -77,7 +77,7 @@ async function main() {
 
   // create track line alice
   const pointsAlice = ANIMATION_POINTS_ALICE.map(p => overlay.latLngAltToVector3(p));
-  const curveAlice = new CatmullRomCurve3(pointsAlice, true, 'catmullrom', 0.2);
+  const curveAlice = new CatmullRomCurve3(pointsAlice, false, 'catmullrom', 0.2);
   const trackLineAlice = createTrackLine(curveAlice);
   curveAlice.updateArcLengths();
   scene.add(trackLineAlice);
@@ -85,7 +85,7 @@ async function main() {
   
   // create track line bob
   const pointsBob = ANIMATION_POINTS_BOB.map(p => overlay.latLngAltToVector3(p));
-  const curveBob = new CatmullRomCurve3(pointsBob, true, 'catmullrom', 0.2);
+  const curveBob = new CatmullRomCurve3(pointsBob, false, 'catmullrom', 0.2);
   const trackLineBob = createTrackLine(curveBob);
   curveBob.updateArcLengths();
   scene.add(trackLineBob);
@@ -172,13 +172,7 @@ async function main() {
     if (performance.now() < DURATION_BOB)
       animationProgress2 = performance.now() / DURATION_BOB;
 
-<<<<<<< HEAD
-    curveAlice.getPointAt(animationProgress, personModelAlice.position);
-    curveAlice.getTangentAt(animationProgress, tmpVec3);
-    personModelAlice.quaternion.setFromUnitVectors(PERSON_FRONT, tmpVec3);
-    curveBob.getPointAt(animationProgress, personModelBob.position);
-    curveBob.getTangentAt(animationProgress, tmpVec3);
-=======
+
     curveAlice.getPointAt(animationProgress1, personModelAlice.position);
     curveAlice.getPointAt(animationProgress1, cylinder1.position);
     curveAlice.getTangentAt(animationProgress1, tmpVec3);
@@ -187,7 +181,6 @@ async function main() {
     curveBob.getPointAt(animationProgress2, personModelBob.position);
     curveBob.getPointAt(animationProgress2, cylinder2.position);
     curveBob.getTangentAt(animationProgress2, tmpVec3);
->>>>>>> 07ab9a5382531ef43bb649c35d829a162be9bd76
     personModelBob.quaternion.setFromUnitVectors(PERSON_FRONT, tmpVec3);
     ///////////////////////////////
 

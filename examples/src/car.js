@@ -97,8 +97,9 @@ async function main() {
 
   // create a Catmull-Rom spline from the points to smooth out the corners
   // for the animation
-  const points = dataPoints.map(p => overlay.latLngAltToVector3(p));
-  const curve = new CatmullRomCurve3(points, true, 'catmullrom', 0.2);
+
+  const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
+  const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
   curve.updateArcLengths();
 
   const trackLine = createTrackLine(curve);
