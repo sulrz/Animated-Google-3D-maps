@@ -1,4 +1,4 @@
-import {Mesh, MeshStandardMaterial, CylinderGeometry} from 'three';
+import {Mesh, MeshStandardMaterial, CylinderGeometry, SphereGeometry, CircleBufferGeometry} from 'three';
 import ThreeJSOverlayView from '@ubilabs/threejs-overlay-view';
 
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
@@ -35,7 +35,7 @@ var ACUURACY_POINTS = [
   {time: 98692, horizontal: 11.846220, vertical: 	6.47284},
 ]
 
-ACUURACY_POINTS = ACUURACY_POINTS.map(point => {return{...point, time: point.time / 10}});
+ACUURACY_POINTS = ACUURACY_POINTS.map(point => {return{...point, time: point.time / 3}});
 
 const DURATION = ACUURACY_POINTS[ACUURACY_POINTS.length-1].time - ACUURACY_POINTS[0].time;
 const START_HOR_ACC = ACUURACY_POINTS[0].horizontal;
@@ -61,6 +61,15 @@ async function main() {
   
   scene.add(cylinder);
 
+  const sphere = new Mesh(
+    new SphereGeometry(50, 100, 100),
+    new MeshStandardMaterial({color: 0xff0000})
+  );
+  
+  const spherePosition = {...VIEW_PARAMS.center};
+  overlay.latLngAltToVector3(spherePosition, sphere.position);
+  scene.add(sphere);
+
   var ind = 0;
   var timer = 0.0;
   var currentTime = ACUURACY_POINTS[0].time;
@@ -70,10 +79,17 @@ async function main() {
   var prevTime = 0.0;
 
   overlay.update = () => {
+    overlay.requestRedraw();
+
+    var newPos = sphere.position;
+    newPos.x += 5;
+
+    sphere.position.set(newPos.x, newPos.y, newPos.z);
+    cylinder.position.set(newPos.x, newPos.y, newPos.z);
+
     if (!cylinder) return;
     if (performance.now() > DURATION) return;
     if (ind + 1 >= ACUURACY_POINTS.length) return;
-
 
     if (ACUURACY_POINTS[ind].time - startTime < performance.now()) {
       ind++;
@@ -90,7 +106,7 @@ async function main() {
     var addSizeHor = deltaHorAcc * (timer / currentTime);
     var addSizeVer = deltaVerAcc * (timer / currentTime);
 
-    cylinder.scale.set(ACUURACY_POINTS[ind].horizontal + addSizeHor, ACUURACY_POINTS[ind].horizontal + addSizeHor, (ACUURACY_POINTS[ind].vertical + addSizeVer) * 2);
+    cylinder.scale.set(ACUURACY_POINTS[ind].horizontal + addSizeHor, (ACUURACY_POINTS[ind].vertical + addSizeVer) * 2, ACUURACY_POINTS[ind].horizontal + addSizeHor);
 
     timer += performance.now() - prevTime;
     prevTime = performance.now();
