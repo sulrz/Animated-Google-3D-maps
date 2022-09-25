@@ -6,77 +6,29 @@ import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
 import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
 
-import data from '../../src/XLSXParser/datajson4.json';
 import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
+
+var axios = require('axios');
 
 const CAR_FRONT = new Vector3(0, 1, 0);
 
-let dataPoints = data.map(point => {
-  return {
-    ...point, lat: point.Latitude, 
-    lng: point.Longitude, 
-    "Timestamp": point["Timestamp"],
-    "Horizontal accuracy": point["Horizontal accuracy"] / 3, 
-    "Vertical accuracy": point["Vertical accuracy"] / 3
-  };
-});
-
 const VIEW_PARAMS = {
-  center: {lat: dataPoints[0]["Latitude"], lng: dataPoints[0]["Longitude"]},
-  zoom: 17,
-  heading: 60,
-  tilt: 67.5
+  center: {lat: 51.49992826386113, lng: -0.15997018684951847},
+  zoom: 18,
+  heading: 40,
+  tilt: 65
 };
 
 const ANIMATION_DURATION = 20000;
-
-const ANIMATION_POINTS = [
-  {lat: 51.50843075, lng: -0.098585086},
-  {lat: 51.50817223, lng: -0.09859787},
-  {lat: 51.50840261, lng: -0.098512051},
-  {lat: 51.5086788, lng: -0.09849205},
-  {lat: 51.50917358, lng: -0.098467999},
-  {lat: 51.50959378, lng: -0.098424099},
-  {lat: 51.51008767, lng: -0.09837941},
-  {lat: 51.51052555, lng: -0.098353134},
-  {lat: 51.51085497, lng: -0.098416265},
-  {lat: 51.51116061, lng: -0.098394436}
-];
-
-// const ANIMATION_POINTS = [
-//     {lat: 40.78017131, lng:	-73.96810659, altitude: 1.191633802},
-//     {lat: 40.7803053, lng:	-73.96775031, altitude: 0.942729652},
-//     {lat: 40.77999979, lng:	-73.96709096, altitude: 1.066590352},
-//     {lat: 40.78025706 , lng: -73.96605064, altitude: 2.582525378},
-//     {lat: 40.78118795 , lng: -73.96516988, altitude: 1.061874673},
-//     {lat: 40.78205682, lng: 	-73.96513996, altitude: 1.336640946},
-//     {lat: 40.78258892, lng: 	-73.96570807, altitude: 0.337218268},
-//     {lat: 40.78239453, lng: 	-73.9670961, altitude: 0.71900696},
-//     {lat: 40.78163486, lng: 	-73.96779419, altitude: 2.482616507},
-//     {lat: 40.78047792, lng: 	-73.96793906, altitude: 0.627920173}
-// ];
-
-// const ANIMATION_POINTS = [
-//   {lat: 51.50843075, lng:	-0.098585086, altitude: 0},
-//     {lat: 51.50817223, lng:	-0.09859787, altitude: 3},
-//     {lat: 51.50840261, lng:	-0.098512051, altitude: 6},
-//     {lat: 51.5086788 , lng: -0.09849205, altitude: 9},
-//     {lat: 51.50917358, lng: 	-0.098467999, altitude: 12},
-//     {lat: 51.50959378, lng: 	-0.098424099, altitude: 15},
-//     {lat: 51.51008767, lng: 	-0.09837941, altitude: 18},
-//     {lat: 51.51052555, lng: 	-0.098353134, altitude: 21},
-//     {lat: 51.51085497, lng: 	-0.098416265, altitude: 24},
-//     {lat: 51.51116061, lng: 	-0.098394436, altitude: 27},
-// ];
+var overallTime = 0;
+var prevTime = 0;
 
 const mapContainer = document.querySelector('#map');
 const tmpVec3 = new Vector3();
 
-const DURATION = dataPoints[dataPoints.length-1]["Timestamp"];
-const START_HOR_ACC = dataPoints[0]["Horizontal accuracy"];
-const START_VER_ACC = dataPoints[0]["Horizontal accuracy"];
-
-async function main() {
+async function main(arrData) {
+  overallTime = 0;
+  const ANIMATION_POINTS = arrData;
   const map = await initMap();
   const elevator = new google.maps.ElevationService();
 
@@ -85,111 +37,86 @@ async function main() {
 
   overlay.setMap(map);
 
-  const cylinder = new Mesh(
-    new CylinderGeometry(START_HOR_ACC, START_HOR_ACC, START_VER_ACC * 2, 100),
-    new MeshStandardMaterial({color: 0x0000ff, opacity: 0.3, transparent: true})
-  );
-  cylinder.scale.set(dataPoints[0]["Horizontal accuracy"], (dataPoints[0]["Vertical accuracy"]) * 2, dataPoints[0]["Horizontal accuracy"]);
-  cylinder.rotation.set(Math.PI / 2, 0, 0);
-  const cylinderPosition = {...VIEW_PARAMS.center};
-  overlay.latLngAltToVector3(cylinderPosition, cylinder.position);
-  scene.add(cylinder);
-
-  // create a Catmull-Rom spline from the points to smooth out the corners
-  // for the animation
-
   const points = ANIMATION_POINTS.map(p => overlay.latLngAltToVector3(p));
   const curve = new CatmullRomCurve3(points, false, 'catmullrom', 0.2);
   curve.updateArcLengths();
 
+  const displayAltitude = (location, elevator) => {
+    elevator
+      .getElevationForLocations({
+        locations: [location]
+      })
+      .then(({results}) => {
+        if (results[0]) {
+          console.log(results[0].elevation);
+        } else {
+          console.log('no res');
+        }
+      })
+      .catch(e => console.log(e));
+  };
+
+  ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
+
   const trackLine = createTrackLine(curve);
   scene.add(trackLine);
-
-  // const displayAltitude = (location, elevator) => {
-  //   elevator
-  //     .getElevationForLocations({
-  //       locations: [location]
-  //     })
-  //     .then(({results}) => {
-  //       if (results[0]) {
-  //         console.log(results[0].elevation);
-  //       } else {
-  //         console.log('no res');
-  //       }
-  //     })
-  //     .catch(e => console.log(e));
-  // };
-
-  // ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
   let carModel = null;
   loadCarModel().then(obj => {
     carModel = obj;
     scene.add(carModel);
-    const carPosition = {...VIEW_PARAMS.center};
-    overlay.latLngAltToVector3(carPosition, carModel.position);
 
-    carModel.scale.set(2, 2, 2);
-    carModel.rotation.set(0, 0, -Math.PI / 2);
     // since loading the car-model happened asynchronously, we need to
     // explicitly trigger a redraw.
     overlay.requestRedraw();
   });
-
-  var ind = 0;
-  var timer = 0.0;
-  var prevTime = 0.0;
-  var currentTime = dataPoints[0]["Timestamp"];
-  
-  var deltaHorAcc = 0;
-  var deltaVerAcc = 0;
 
   // the update-function will animate the car along the spline
   overlay.update = () => {
     trackLine.material.resolution.copy(overlay.getViewportSize());
 
     if (!carModel) return;
-    if (!cylinder) return;
-    if (performance.now() > DURATION) return;
-    if (ind + 1 >= dataPoints.length) return;
+    if (overallTime > ANIMATION_DURATION) return;
 
-    const animationProgress = performance.now() / DURATION;
-
-    // const animationProgress =
-    //   (performance.now() % ANIMATION_DURATION) / ANIMATION_DURATION;
+    const animationProgress = overallTime / ANIMATION_DURATION;
 
     curve.getPointAt(animationProgress, carModel.position);
-    curve.getPointAt(animationProgress, cylinder.position);
-    carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
     curve.getTangentAt(animationProgress, tmpVec3);
+    carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
 
-    if (timer / currentTime >= 1) {
-      ind++;
-
-      if (ind + 1 >= dataPoints.length) return;
-
-
-      var timeDiff = (dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"]) / 1000;
-
-      deltaHorAcc = dataPoints[ind + 1]["Horizontal accuracy"] - dataPoints[ind]["Horizontal accuracy"];
-      deltaHorAcc /= timeDiff;
-      deltaVerAcc = dataPoints[ind + 1]["Vertical accuracy"] - dataPoints[ind]["Vertical accuracy"];
-      deltaVerAcc /= timeDiff;
-
-      timer = 0.0;
-      currentTime = dataPoints[ind + 1]["Timestamp"] - dataPoints[ind]["Timestamp"];
-    }
-
-    var addSizeHor = deltaHorAcc / ((performance.now() - prevTime));
-    var addSizeVer = deltaVerAcc / ((performance.now() - prevTime));
-
-    cylinder.scale.set(cylinder.scale.x + addSizeHor, cylinder.scale.y + addSizeVer * 2, cylinder.scale.z + addSizeHor);
-
-    timer += performance.now() - prevTime;
+    overallTime += performance.now() - prevTime;
     prevTime = performance.now();
-
     overlay.requestRedraw();
   };
+}
+
+async function fetchRoad(destinationCoordinate) {
+  if (destinationCoordinate === null) {
+    return;
+  }
+  var config = {
+    method: 'get',
+    url: `https://maps.googleapis.com/maps/api/directions/json?origin=51.49992826386113,-0.15997018684951847&destination=${destinationCoordinate.lat},${destinationCoordinate.lng}&key=AIzaSyDNBKSzCknMCkDnKHApWbAMQKhSJ_4PKHI&alternatives=false`,
+    headers: {}
+  };
+
+  let arrData = [];
+
+  await axios(config)
+    .then(function (response) {
+      const roadData = response.data.routes[0].legs[0].steps;
+      for (let i = 0; i < roadData.length; i++) {
+        arrData.push(roadData[i].start_location);
+        arrData.push(roadData[i].end_location);
+      }
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  prevTime = performance.now();
+  main(arrData);
+  return arrData;
 }
 
 /**
@@ -199,13 +126,20 @@ async function initMap() {
   const {mapId} = getMapsApiOptions();
   await loadMapsApi();
 
-  return new google.maps.Map(mapContainer, {
+  const map = new google.maps.Map(mapContainer, {
     mapId,
-    // disableDefaultUI: true,
+    disableDefaultUI: true,
     backgroundColor: 'transparent',
     gestureHandling: 'greedy',
     ...VIEW_PARAMS
   });
+
+  map.addListener('click', mapsMouseEvent => {
+    fetchRoad(mapsMouseEvent.latLng.toJSON());
+    console.log(JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2));
+  });
+
+  return map;
 }
 
 /**
@@ -244,7 +178,7 @@ async function loadCarModel() {
       const group = gltf.scene;
       const carModel = group.getObjectByName('sedan');
 
-      carModel.scale.setScalar(3);
+      carModel.scale.setScalar(50);
       carModel.rotation.set(Math.PI / 2, 0, Math.PI, 'ZXY');
 
       resolve(group);

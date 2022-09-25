@@ -55,6 +55,8 @@
     "access": "public"
   },
   "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
     "fs": "^0.0.1-security",
     "xlsx": "^0.18.5"
   }
