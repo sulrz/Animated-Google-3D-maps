@@ -21,7 +21,7 @@ const VIEW_PARAMS = {
   clickableIcons: false
 };
 
-const ANIMATION_DURATION = 20000;
+let ANIMATION_DURATION;
 var overallTime = 0;
 var prevTime = 0;
 
@@ -61,18 +61,21 @@ async function main(arrData) {
   ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
   // create end pointer and add to scene
-  var loader = new GLTFLoader();               
-  loader.load(
-    PIN_URL,
-    gltf => {
-      gltf.scene.scale.set(15,15,15);
-      gltf.scene.rotation.x = 180 * Math.PI/180; // rotations are in radians
-      var position1 = overlay.latLngAltToVector3(ANIMATION_POINTS[ANIMATION_POINTS.length - 1]);
-      var position2 = overlay.latLngAltToVector3(ANIMATION_POINTS[0]);
-      gltf.scene.position.set(position1.x - position2.x, position1.y - position2.y, 20);
-      scene.add(gltf.scene);
-    }
-  );
+  var loader = new GLTFLoader();
+  loader.load(PIN_URL, gltf => {
+    gltf.scene.scale.set(15, 15, 15);
+    gltf.scene.rotation.x = (180 * Math.PI) / 180; // rotations are in radians
+    var position1 = overlay.latLngAltToVector3(
+      ANIMATION_POINTS[ANIMATION_POINTS.length - 1]
+    );
+    var position2 = overlay.latLngAltToVector3(ANIMATION_POINTS[0]);
+    gltf.scene.position.set(
+      position1.x - position2.x,
+      position1.y - position2.y,
+      20
+    );
+    scene.add(gltf.scene);
+  });
   /////////////////////////////////////////
 
   const trackLine = createTrackLine(curve);
@@ -82,7 +85,7 @@ async function main(arrData) {
   loadCarModel().then(obj => {
     carModel = obj;
     carModel.scale.set(0.3, 0.3, 0.3);
-    
+
     scene.add(carModel);
     overlay.requestRedraw();
   });
@@ -125,6 +128,8 @@ async function fetchRoad(destinationCoordinate) {
         arrData.push(roadData[i].start_location);
         arrData.push(roadData[i].end_location);
       }
+
+      ANIMATION_DURATION = response.data.routes[0].legs[0].duration.value * 200;
     })
     .catch(function (error) {
       console.log(error);
