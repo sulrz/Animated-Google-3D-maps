@@ -11,6 +11,7 @@ import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
 
 import data from '../../src/XLSXParser/datajson8.json';
 import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
+import PIN_URL from 'url:../assets/pin.gltf';
 
 const CAR_FRONT = new Vector3(0, 1, 0);
 
@@ -47,6 +48,21 @@ async function main() {
   overlay.setMap(map);
 
   const scene = overlay.getScene();
+
+  // create end pointer and add to scene
+  var loader = new GLTFLoader();               
+  loader.load(
+    PIN_URL,
+    gltf => {
+      gltf.scene.scale.set(100,100,100);
+      gltf.scene.rotation.x = 180 * Math.PI/180; // rotations are in radians
+      var position1 = overlay.latLngAltToVector3(dataPoints[dataPoints.length - 1]);
+      var position2 = overlay.latLngAltToVector3(dataPoints[0]);
+      gltf.scene.position.set(position1.x - position2.x, position1.y - position2.y, 300);
+      scene.add(gltf.scene);
+    }
+  );
+  /////////////////////////////////////////
 
   // create cylinder and add to scene
   const cylinder = new Mesh(
