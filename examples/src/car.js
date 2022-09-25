@@ -7,6 +7,7 @@ import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
 import {getMapsApiOptions, loadMapsApi} from '../jsm/load-maps-api';
 
 import CAR_MODEL_URL from 'url:../assets/lowpoly-sedan.glb';
+import PIN_URL from 'url:../assets/pin.gltf';
 
 var axios = require('axios');
 
@@ -14,7 +15,7 @@ const CAR_FRONT = new Vector3(0, 1, 0);
 
 const VIEW_PARAMS = {
   center: {lat: 51.49992826386113, lng: -0.15997018684951847},
-  zoom: 18,
+  zoom: 16,
   heading: 40,
   tilt: 65
 };
@@ -58,16 +59,30 @@ async function main(arrData) {
 
   ANIMATION_POINTS.map(p => displayAltitude(p, elevator));
 
+  // create end pointer and add to scene
+  var loader = new GLTFLoader();               
+  loader.load(
+    PIN_URL,
+    gltf => {
+      gltf.scene.scale.set(15,15,15);
+      gltf.scene.rotation.x = 180 * Math.PI/180; // rotations are in radians
+      var position1 = overlay.latLngAltToVector3(ANIMATION_POINTS[ANIMATION_POINTS.length - 1]);
+      var position2 = overlay.latLngAltToVector3(ANIMATION_POINTS[0]);
+      gltf.scene.position.set(position1.x - position2.x, position1.y - position2.y, 20);
+      scene.add(gltf.scene);
+    }
+  );
+  /////////////////////////////////////////
+
   const trackLine = createTrackLine(curve);
   scene.add(trackLine);
 
   let carModel = null;
   loadCarModel().then(obj => {
     carModel = obj;
+    carModel.scale.set(0.3, 0.3, 0.3);
+    
     scene.add(carModel);
-
-    // since loading the car-model happened asynchronously, we need to
-    // explicitly trigger a redraw.
     overlay.requestRedraw();
   });
 
