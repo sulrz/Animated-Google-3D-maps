@@ -20,11 +20,14 @@ const VIEW_PARAMS = {
 };
 
 const ANIMATION_DURATION = 20000;
+var overallTime = 0;
+var prevTime = 0;
 
 const mapContainer = document.querySelector('#map');
 const tmpVec3 = new Vector3();
 
 async function main(arrData) {
+  overallTime = 0;
   const ANIMATION_POINTS = arrData;
   const map = await initMap();
   const elevator = new google.maps.ElevationService();
@@ -73,14 +76,16 @@ async function main(arrData) {
     trackLine.material.resolution.copy(overlay.getViewportSize());
 
     if (!carModel) return;
-    if (performance.now() > ANIMATION_DURATION) return;
+    if (overallTime > ANIMATION_DURATION) return;
 
-    const animationProgress = performance.now() / ANIMATION_DURATION;
+    const animationProgress = overallTime / ANIMATION_DURATION;
 
     curve.getPointAt(animationProgress, carModel.position);
     curve.getTangentAt(animationProgress, tmpVec3);
     carModel.quaternion.setFromUnitVectors(CAR_FRONT, tmpVec3);
 
+    overallTime += performance.now() - prevTime;
+    prevTime = performance.now();
     overlay.requestRedraw();
   };
 }
@@ -109,6 +114,7 @@ async function fetchRoad(destinationCoordinate) {
       console.log(error);
     });
 
+  prevTime = performance.now();
   main(arrData);
   return arrData;
 }
