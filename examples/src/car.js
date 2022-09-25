@@ -17,7 +17,8 @@ const VIEW_PARAMS = {
   center: {lat: 51.49992826386113, lng: -0.15997018684951847},
   zoom: 16,
   heading: 40,
-  tilt: 65
+  tilt: 65,
+  clickableIcons: false
 };
 
 const ANIMATION_DURATION = 20000;
